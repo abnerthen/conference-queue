@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root {
+      --ink: #14202b;
+      --muted: #52606d;
+      --line: #c9d2db;
+      --bg: #eef2f5;
+      --accent: #0b5c8a;
+      --error: #a4161a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink);
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      display: flex; justify-content: center; padding: 1.5rem 1rem;
+    }
+    main { width: 100%; max-width: 420px; }
+    h1 { font-size: 1.6rem; margin: .5rem 0 .25rem; letter-spacing: -.01em; }
+    p.lead { margin: 0 0 1.25rem; color: var(--muted); line-height: 1.45; }
+    label { display: block; font-weight: 600; margin: 1rem 0 .3rem; }
+    input {
+      width: 100%; font-size: 1.05rem; padding: .8rem; border: 2px solid var(--line);
+      border-radius: 8px; background: #fff; color: var(--ink);
+    }
+    input:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+    #code { letter-spacing: .12em; text-transform: uppercase; }
+    button {
+      width: 100%; margin-top: 1.25rem; padding: .9rem; font-size: 1.05rem; font-weight: 600;
+      color: #fff; background: var(--accent); border: 0; border-radius: 8px; cursor: pointer;
+    }
+    button:disabled { opacity: .6; cursor: wait; }
+    #err { color: var(--error); font-weight: 600; min-height: 1.4em; margin-top: .9rem; }
+    .hint { font-size: .9rem; color: var(--muted); margin-top: .6rem; }
+
+    #pass { border-radius: 16px; padding: 1.25rem; text-align: center; margin-top: 1rem; }
+    #pass .type { font-size: 1.9rem; font-weight: 800; margin: 0; }
+    #pass .who { font-size: 1.1rem; margin: .1rem 0 1rem; }
+    #qr { display: inline-block; background: #fff; padding: 14px; border-radius: 10px; }
+    #pass .counter { font-size: 1.25rem; font-weight: 700; margin: 1rem 0 .2rem; }
+    #pass .note { font-size: .9rem; margin: 0; }
+  </style>
+</head>
+<body>
+<main>
+  <section id="form">
+    <h1>Check in to the conference</h1>
+    <p class="lead">Enter the email you registered with and the registration code from your ticket email. You will get a QR code to show at your counter.</p>
+    <label for="email">Registered email</label>
+    <input id="email" type="email" autocomplete="email" placeholder="you@example.com">
+    <label for="code">Registration code</label>
+    <input id="code" type="text" autocomplete="off" autocapitalize="characters" placeholder="K7QM-2XPD">
+    <button id="go" type="button" onclick="submitForm()">Show my QR code</button>
+    <p id="err" role="alert"></p>
+    <p class="hint">Cannot find your code? Search your inbox for your ticket confirmation, or visit the help desk.</p>
+  </section>
+
+  <section id="pass" hidden>
+    <p class="type" id="type"></p>
+    <p class="who" id="who"></p>
+    <div id="qr"></div>
+    <p class="counter" id="counter"></p>
+    <p class="note">Show this screen to staff. Turn your screen brightness up.</p>
+  </section>
+</main>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  function submitForm() {
+    $('err').textContent = '';
+    $('go').disabled = true;
+    google.script.run
+      .withSuccessHandler(r => {
+        $('go').disabled = false;
+        if (!r.ok) { $('err').textContent = r.error; return; }
+        render(r);
+      })
+      .withFailureHandler(e => {
+        $('go').disabled = false;
+        $('err').textContent = 'Something went wrong. Try again. (' + e.message + ')';
+      })
+      .getQr($('email').value, $('code').value);
+  }
+
+  function render(r) {
+    $('form').hidden = true;
+    const pass = $('pass');
+    pass.hidden = false;
+    pass.style.background = r.colour;
+    $('type').textContent = r.type;
+    $('who').textContent = r.name;
+    $('counter').textContent = 'Go to ' + r.counter;
+    $('qr').innerHTML = '';
+    new QRCode($('qr'), {
+      text: r.token, width: 240, height: 240,
+      colorDark: '#000000', colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !$('form').hidden) submitForm();
+  });
+</script>
+</body>
+</html>

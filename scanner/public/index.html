@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Check-in scanner</title>
+  <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    :root { --ink: #14202b; --muted: #52606d; --line: #c9d2db; --bg: #eef2f5; --accent: #0b5c8a; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink);
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif; padding: 1rem;
+    }
+    main { max-width: 480px; margin: 0 auto; }
+    h1 { font-size: 1.3rem; margin: 0 0 .75rem; }
+    #keyRow { display: flex; gap: .5rem; margin-bottom: .75rem; }
+    #staffKey { flex: 1; font-size: 1rem; padding: .7rem; border: 2px solid var(--line); border-radius: 8px; }
+    #saveKey { padding: .7rem 1rem; font-size: 1rem; font-weight: 600; color: #fff; background: var(--accent); border: 0; border-radius: 8px; }
+    :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+    #reader { width: 100%; background: #000; border-radius: 12px; overflow: hidden; }
+    #result { margin-top: 1rem; border-radius: 12px; padding: 1.1rem; min-height: 7rem; border: 3px solid transparent; }
+    #result.idle { background: #fff; border-color: var(--line); color: var(--muted); }
+    #result.ok { background: #fff; }
+    #result.bad { background: #ffd9d9; border-color: #a4161a; color: #5c0b0d; }
+    .status { font-weight: 800; font-size: 1.1rem; margin: 0; }
+    .name { font-size: 1.5rem; font-weight: 700; margin: .25rem 0; }
+    .type { display: inline-block; font-size: 1.35rem; font-weight: 800; padding: .3rem .8rem; border-radius: 8px; color: #000; }
+    .counter { margin: .5rem 0 0; font-weight: 600; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Check-in scanner</h1>
+  <div id="keyRow">
+    <input id="staffKey" type="password" placeholder="Staff key" autocomplete="off">
+    <button id="saveKey" type="button">Start</button>
+  </div>
+  <div id="reader"></div>
+  <div id="result" class="idle" aria-live="polite"><p class="status">Ready. Point the camera at an attendee's QR code.</p></div>
+</main>
+
+<script>
+  // Paste your Apps Script web app URL (ends in /exec)
+  const API = 'https://script.google.com/macros/s/AKfycbxyexrDOxm7J3S0Oiyzj03atLSFTlIXHSVYLOH_skFFEIvGJxX-NtNcVisMFEoF4FmtiA/exec';
+
+  const $ = id => document.getElementById(id);
+  const resultBox = $('result');
+  let busy = false;
+  let scanner = null;
+
+  $('staffKey').value = sessionStorage.getItem('staffKey') || '';
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  function show(d) {
+    if (d.ok) {
+      resultBox.className = 'ok';
+      resultBox.style.borderColor = d.colour;
+      resultBox.innerHTML =
+        '<p class="status">Checked in</p>' +
+        '<p class="name">' + esc(d.name) + '</p>' +
+        '<span class="type" style="background:' + esc(d.colour) + '">' + esc(d.type) + '</span>' +
+        '<p class="counter">Counter: ' + esc(d.counter) + '. Colour should match the attendee\'s screen.</p>';
+      if (navigator.vibrate) navigator.vibrate(120);
+    } else {
+      resultBox.className = 'bad';
+      resultBox.style.borderColor = '';
+      resultBox.innerHTML = '<p class="status">Not checked in</p><p class="name">' + esc(d.error) + '</p>';
+      if (navigator.vibrate) navigator.vibrate([120, 80, 120]);
+    }
+  }
+
+  async function onScan(text) {
+    if (busy) return;
+    busy = true;
+    try {
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },  // simple request: no CORS preflight
+        body: JSON.stringify({ action: 'scan', token: text, staffKey: $('staffKey').value })
+      });
+      show(await res.json());
+    } catch (e) {
+      show({ ok: false, error: 'Network error. Try scanning again.' });
+    }
+    setTimeout(() => { busy = false; }, 2000);
+  }
+
+  $('saveKey').addEventListener('click', async () => {
+    sessionStorage.setItem('staffKey', $('staffKey').value);
+    if (scanner) return;
+    scanner = new Html5Qrcode('reader');
+    try {
+      await scanner.start({ facingMode: 'environment' }, { fps: 10, qrbox: 250 }, onScan);
+    } catch (e) {
+      scanner = null;
+      show({ ok: false, error: 'Camera unavailable. Allow camera access and reload.' });
+    }
+  });
+</script>
+</body>
+</html>
