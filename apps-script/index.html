@@ -9,10 +9,15 @@
       --ink: #14202b;
       --muted: #52606d;
       --line: #c9d2db;
-      --bg: #eef2f5;
-      --accent: #0b5c8a;
+      --bg: <?= brand.background ?>;
+      --accent: <?= brand.primary ?>;
+      --accent-2: <?= brand.accent ?>;
       --error: #a4161a;
     }
+    .brand { display: flex; align-items: center; gap: .6rem; margin-bottom: 1rem; }
+    .brand__logo { height: 40px; width: auto; border-radius: 6px; }
+    .brand__name { font-weight: 700; font-size: 1.1rem; letter-spacing: -.01em; color: var(--ink); }
+    .brand-footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top: 1.5rem; }
     * { box-sizing: border-box; }
     body {
       margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink);
@@ -47,6 +52,7 @@
 </head>
 <body>
 <main>
+  <?!= include('BrandHeader') ?>
   <section id="form">
     <h1>Check in to the conference</h1>
     <p class="lead">Enter the email you registered with and the registration code from your ticket email. You will get a QR code to show at your counter.</p>
@@ -66,9 +72,11 @@
     <p class="counter" id="counter"></p>
     <p class="note">Show this screen to staff. Turn your screen brightness up.</p>
   </section>
+  <?!= include('BrandFooter') ?>
 </main>
 
 <script>
+  const BRAND = <?!= brandJson ?>;
   const $ = id => document.getElementById(id);
 
   function submitForm() {
@@ -106,6 +114,11 @@
   document.addEventListener('keydown', e => {
     if (e.key === 'Enter' && !$('form').hidden) submitForm();
   });
+
+  const PREFILL = <?!= prefill ?>;
+  if (PREFILL.email) $('email').value = PREFILL.email;
+  if (PREFILL.code) $('code').value = PREFILL.code;
+  if (PREFILL.email && PREFILL.code) submitForm();   // show the QR straight away
 </script>
 </body>
 </html>

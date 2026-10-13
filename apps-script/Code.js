@@ -125,10 +125,42 @@ function typeInfo_(type) {
 
 /* ------------------------- Web app entry points ----------------------------- */
 
-function doGet() {
-  return HtmlService.createHtmlOutputFromFile('index')
-    .setTitle('Conference check-in')
+function doGet(e) {
+  const p = (e && e.parameter) || {};
+  const b = brand_();
+  const t = HtmlService.createTemplateFromFile('index');
+  t.brand = b;
+  t.brandJson = JSON.stringify(b).replace(/</g, '\\u003c'); // prevent XSS
+  t.prefill = JSON.stringify({
+    email: p.email || '',
+    code: p.code || ''
+  })
+  .replace(/</g, '\\u003c'); // prevent XSS
+  return t.evaluate()
+    .setTitle(b.name || 'Conference check-in')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+// Reusable HTML partials (components) for the templated pages.
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
+
+// Central brand/corporate-identity config. Override via Script Properties.
+function brand_() {
+  const p = PropertiesService.getScriptProperties();
+  const get = (k, d) => {
+    const v = p.getProperty(k);
+    return (v === null || v === undefined || v === '') ? d : v;
+  };
+  return {
+    name: get('BRAND_NAME', 'Conference check-in'),
+    logoUrl: get('BRAND_LOGO_URL', ''),
+    primary: get('BRAND_PRIMARY', '#0b5c8a'),
+    accent: get('BRAND_ACCENT', '#4f46e5'),
+    background: get('BRAND_BG', '#eef2f5'),
+    footerText: get('BRAND_FOOTER', '')
+  };
 }
 
 function doPost(e) {
