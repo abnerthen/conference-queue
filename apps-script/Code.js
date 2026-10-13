@@ -156,10 +156,12 @@ function brand_() {
   return {
     name: get('BRAND_NAME', 'Conference check-in'),
     logoUrl: get('BRAND_LOGO_URL', ''),
+    linkUrl: get('BRAND_LINK_URL', ''),
     primary: get('BRAND_PRIMARY', '#0b5c8a'),
     accent: get('BRAND_ACCENT', '#4f46e5'),
     background: get('BRAND_BG', '#eef2f5'),
-    footerText: get('BRAND_FOOTER', '')
+    footerText: get('BRAND_FOOTER', ''),
+    footerLinkUrl: get('BRAND_FOOTER_URL', '')
   };
 }
 

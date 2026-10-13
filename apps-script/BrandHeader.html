@@ -1,6 +1,15 @@
 <header class="brand">
-  <? if (brand && brand.logoUrl) { ?>
-    <img class="brand__logo" src="<?= brand.logoUrl ?>" alt="<?= brand.name ?>">
+  <? if (brand && brand.linkUrl) { ?>
+    <a class="brand__link" href="<?= brand.linkUrl ?>" target="_blank" rel="noopener">
+      <? if (brand.logoUrl) { ?>
+        <img class="brand__logo" src="<?= brand.logoUrl ?>" alt="<?= brand.name ?>">
+      <? } ?>
+      <span class="brand__name"><?= brand.name ?></span>
+    </a>
+  <? } else { ?>
+    <? if (brand && brand.logoUrl) { ?>
+      <img class="brand__logo" src="<?= brand.logoUrl ?>" alt="<?= brand.name ?>">
+    <? } ?>
+    <span class="brand__name"><?= brand.name ?></span>
   <? } ?>
-  <span class="brand__name"><?= brand.name ?></span>
 </header>
