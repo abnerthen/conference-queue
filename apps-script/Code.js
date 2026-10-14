@@ -14,7 +14,7 @@
  */
 
 const ATT = 'Attendees';
-const TYPES = 'Roles';
+const TYPES = 'Types';
 const MAX_FAILS = 5;            // wrong registration codes allowed per email...
 const LOCKOUT_SECONDS = 900;    // ...before a 15 minute lockout
 const QR_VALID_MS = 2 * 60 * 60 * 1000; // QR stays scannable for 2 hours
@@ -117,7 +117,7 @@ function typeInfo_(type) {
   const v = ss_().getSheetByName(TYPES).getDataRange().getValues().slice(1);
   const m = v.find(r => String(r[0]).trim().toLowerCase() === String(type).trim().toLowerCase());
   return m ? { colour: String(m[1]), counter: String(m[2]) }
-           : { colour: '#CCCCCC', counter: 'Help desk' };
+           : { colour: '#030303', counter: 'Help desk' };
 }
 
 /* ------------------------- Web app entry points ----------------------------- */
