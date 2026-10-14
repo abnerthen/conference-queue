@@ -1,5 +1,10 @@
-   {
-     "name": "dcon26-marker",
-     "compatibility_date": "2026-10-01",
-     "assets": { "directory": "./public" }
-   }
+{
+  "name": "dcon26-marker",
+  "main": "index.js",
+  "compatibility_date": "2026-01-01",
+  
+  // Point Wrangler to your public directory containing index.html, config.js, etc.
+  "assets": {
+    "directory": "./public"
+  }
+}
