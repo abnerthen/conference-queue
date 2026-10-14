@@ -35,11 +35,8 @@ function setupSheet() {
   let types = ss.getSheetByName(TYPES);
   if (!types) {
     types = ss.insertSheet(TYPES);
-    types.getRange(1, 1, 4, 3).setValues([
-      ['Type', 'Colour', 'Counter'],
-      ['VIP', '#4f46e5', 'Counter A'],
-      ['Speaker', '#059669', 'Counter B'],
-      ['Participant', '#e2e8f0', 'Counter C']
+    types.getRange(1, 1, 1, 3).setValues([
+      ['Type', 'Colour', 'Counter']
     ]);
     types.getRange(1, 1, 1, 3).setFontWeight('bold');
   }
