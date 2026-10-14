@@ -1,11 +1,3 @@
-<? if (brand && (brand.footerText || brand.footerLinkUrl)) { ?>
-  <footer class="brand-footer">
-    <? if (brand.footerLinkUrl) { ?>
-      <a href="<?= brand.footerLinkUrl ?>" target="_blank" rel="noopener">
-        <?= brand.footerText || brand.footerLinkUrl ?>
-      </a>
-    <? } else { ?>
-      <?= brand.footerText ?>
-    <? } ?>
-  </footer>
+<? if (brand && brand.footerText) { ?>
+  <footer class="brand-footer"><?= brand.footerText ?></footer>
 <? } ?>

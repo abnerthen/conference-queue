@@ -143,7 +143,9 @@ function doGet(e) {
 
 // Reusable HTML partials (components) for the templated pages.
 function include(filename) {
-  return HtmlService.createHtmlOutputFromFile(filename).getContent();
+  const t = HtmlService.createTemplateFromFile(filename);
+  t.brand = brand_();
+  return t.evaluate().getContent();
 }
 
 // Central brand/corporate-identity config. Override via Script Properties.
@@ -155,13 +157,11 @@ function brand_() {
   };
   return {
     name: get('BRAND_NAME', 'Conference check-in'),
-    logoUrl: get('BRAND_LOGO_URL', ''),
-    linkUrl: get('BRAND_LINK_URL', ''),
+    logoUrl: get('BRAND_LOGO_URL', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTK05V6Yxu0pZKX4hmuxM_BU3vAlCb1MZFPcv_NwxFvIA&s=10'),
     primary: get('BRAND_PRIMARY', '#0b5c8a'),
     accent: get('BRAND_ACCENT', '#4f46e5'),
     background: get('BRAND_BG', '#eef2f5'),
-    footerText: get('BRAND_FOOTER', ''),
-    footerLinkUrl: get('BRAND_FOOTER_URL', '')
+    footerText: get('BRAND_FOOTER', '')
   };
 }
 
