@@ -64,7 +64,7 @@
       resultBox.style.borderColor = d.colour;
       resultBox.innerHTML =
         '<p class="status">Checked in</p>' +
-        `<p class="name">${esc(d.name)} \ ${esc(d.token.split('.')[0])}</p>` +
+        `<p class="name">${esc(d.name)} \ ${esc(d.id)}</p>` +
         '<span class="type" style="background:' + esc(d.colour) + '">' + esc(d.type) + '</span>' +
         '<p class="counter">Counter: ' + esc(d.counter) + '. Colour should match the attendee\'s screen.</p>';
       if (navigator.vibrate) navigator.vibrate(120);
