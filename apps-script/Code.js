@@ -237,7 +237,7 @@ function scan_(token, staffKey) {
 
     ss_().getSheetByName(ATT).getRange(a.row, 6, 1, 2).setValues([[true, new Date()]]);
     const t = typeInfo_(a.type);
-    return { ok: true, name: a.name, type: a.type, colour: t.colour, counter: t.counter };
+    return { ok: true, name: a.name, id: a.id, type: a.type, colour: t.colour, counter: t.counter };
   } finally {
     lock.releaseLock();
   }
