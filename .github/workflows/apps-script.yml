@@ -15,6 +15,6 @@ jobs:
           echo '${{ secrets.CLASPRC_JSON }}' > ~/.clasprc.CLASPRC_JSON
       - name: Generate .clasp.json from secret scriptId
         run: |
-          printf '{"scriptId":"%s", "rootDir":"apps-script"}, "scriptExtensions": [".js",".gs"],"htmlExtensions": [".html"],"jsonExtensions": [".json"],"filePushOrder": [],"skipSubdirectories": false}' "${{ secrets.SCRIPT_ID }}" > .clasp.json
+          printf '{"scriptId":"%s", "rootDir":"apps-script", "scriptExtensions": [".js",".gs"],"htmlExtensions": [".html"],"jsonExtensions": [".json"],"filePushOrder": [],"skipSubdirectories": false}' "${{ secrets.SCRIPT_ID }}" > .clasp.json
       - run: clasp push --force
       - run: clasp deploy --deploymentId ${{ secrets.DEPLOY_ID }} --description "${{ github.sha }}"
