@@ -129,7 +129,7 @@ function doGet(e) {
   t.brand = b;
   t.brandJson = JSON.stringify(b).replace(/</g, '\\u003c'); // prevent XSS
   t.prefill = JSON.stringify({
-    email: p.email || '',
+    staffId: p.staffId || '',
     code: p.code || ''
   })
   .replace(/</g, '\\u003c'); // prevent XSS
@@ -178,24 +178,24 @@ function doPost(e) {
 
 /* --------------- Called from the attendee page (google.script.run) ---------- */
 
-function getQr(email, regCode) {
-  email = String(email || '').trim().toLowerCase();
+function getQr(staffId, regCode) {
+  staffId = String(staffId || '').trim().toLowerCase();
   const code = normCode_(regCode);
-  if (!email || !code) return { ok: false, error: 'Enter your email and registration code.' };
+  if (!staffId || !code) return { ok: false, error: 'Enter your staff ID and registration code.' };
 
   const cache = CacheService.getScriptCache();
-  const failKey = 'fails:' + email;
+  const failKey = 'fails:' + staffId;
   const fails = Number(cache.get(failKey) || 0);
   if (fails >= MAX_FAILS) {
     return { ok: false, error: 'Too many wrong attempts. Try again in 15 minutes or visit the help desk.' };
   }
 
-  const a = attendees_().find(x => x.email === email);
-  if (!a) return { ok: false, error: 'This email is not on the attendee list.' };
+  const a = attendees_().find(x => x.id === staffId);
+  if (!a) return { ok: false, error: 'This Staff ID is not on the attendee list.' };
 
   if (!a.code || !safeEqual_(a.code, code)) {
     cache.put(failKey, fails + 1, LOCKOUT_SECONDS);
-    return { ok: false, error: 'The email and registration code do not match. Check your ticket email.' };
+    return { ok: false, error: 'The Staff ID and registration code do not match. Check your ticket email.' };
   }
   cache.remove(failKey);
 

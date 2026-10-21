@@ -102,11 +102,11 @@
   <?!= include('BrandHeader') ?>
   <section id="form">
     <h1>Check in to the conference</h1>
-    <p class="lead">Enter the email you registered with and the registration code from your ticket email. You will get a QR code to show at your counter.</p>
-    <label for="email">Registered email</label>
-    <input id="email" type="email" autocomplete="email" placeholder="you@example.com">
+    <p class="lead">Enter your Staff ID and the registration code from your ticket email. You will get a QR code to show at your counter.</p>
+    <label for="staffId">Staff ID</label>
+    <input id="staffId" type="number" placeholder="xxxxxxxx">
     <label for="code">Registration code</label>
-    <input id="code" type="text" autocomplete="off" autocapitalize="characters" placeholder="K7QM-2XPD">
+    <input id="code" type="text" autocomplete="off" autocapitalize="characters" placeholder="A1B2-3C4D">
     <button id="go" type="button" onclick="submitForm()">Show my QR code</button>
     <p id="err" role="alert"></p>
     <p class="hint">Cannot find your code? Search your inbox for your ticket confirmation, or visit the help desk.</p>
@@ -139,7 +139,7 @@
         $('go').disabled = false;
         $('err').textContent = 'Something went wrong. Try again. (' + e.message + ')';
       })
-      .getQr($('email').value, $('code').value);
+      .getQr($('staffId').value, $('code').value);
   }
 
   function render(r) {
@@ -148,7 +148,7 @@
     pass.hidden = false;
     pass.style.background = r.colour;
     $('type').textContent = r.type;
-    $('who').textContent = r.name;
+    $('who').textContent = `${r.name} / ${r.token.split(".")[0]}`;
     $('counter').textContent = 'Go to ' + r.counter;
     $('qr').innerHTML = '';
     new QRCode($('qr'), {
@@ -163,9 +163,9 @@
   });
 
   const PREFILL = <?!= prefill ?>;
-  if (PREFILL.email) $('email').value = PREFILL.email;
+  if (PREFILL.staffId) $('staffId').value = PREFILL.staffId;
   if (PREFILL.code) $('code').value = PREFILL.code;
-  if (PREFILL.email && PREFILL.code) submitForm();   // show the QR straight away
+  if (PREFILL.staffId && PREFILL.code) submitForm();   // show the QR straight away
 </script>
 </body>
 </html>
