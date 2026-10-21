@@ -23,8 +23,8 @@ jobs:
           # Confirm the files exist and contain valid JSON
           test -s "$HOME/.clasprc.json"
           test -s ".clasp.json"
-          
-          node -e "JSON.parse(require('fs').readFileSync('.clasprc.json', 'utf8')); JSON.parse(require('fs').readFileSync('.clasp.json', 'utf8')); console.log('Both configuration files are valid JSON')"
+
+          node -e "JSON.parse(require('fs').readFileSync(require('os').homedir() + '/.clasprc.json', 'utf8')); JSON.parse(require('fs').readFileSync('.clasp.json', 'utf8')); console.log('Both configuration files are valid JSON')"
       
       - run: npx clasp push --force
       - run: clasp deploy --deploymentId ${{ secrets.DEPLOY_ID }} --description "${{ github.sha }}"
