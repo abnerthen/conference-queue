@@ -206,6 +206,7 @@ function getQr(staffId, regCode) {
   return {
     ok: true,
     name: a.name,
+    id: a.id,
     type: a.type,
     colour: t.colour,
     counter: t.counter,
